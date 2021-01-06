@@ -2,20 +2,20 @@ package com.example.getyourthingsdone.activities
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.getyourthingsdone.R
+import com.example.getyourthingsdone.adapters.OnRecyclerItemClickListener
 import com.example.getyourthingsdone.adapters.RecyclerAdapter
-import com.example.getyourthingsdone.models.Note
-import com.example.getyourthingsdone.models.NoteList
-import com.example.getyourthingsdone.models.RecyclerItemListener
+import com.example.getyourthingsdone.models.SavePreferences
+import com.example.getyourthingsdone.services.AppKillService
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class NotesActivity : AppCompatActivity() {
+class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: RecyclerAdapter
@@ -25,11 +25,16 @@ class NotesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
         setSupportActionBar(findViewById(R.id.toolbar))
-
+        startAppkillservice()
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-           startActivity(Intent(this,
-           EditNoteActivity::class.java))
+           startActivity(
+               Intent(
+                   this,
+                   EditNoteActivity::class.java
+               )
+           )
         }
+
 
 
 
@@ -38,8 +43,9 @@ class NotesActivity : AppCompatActivity() {
 
         linearLayoutManager = LinearLayoutManager(this)
         mRecyclerView.layoutManager = linearLayoutManager
-        mAdapter = RecyclerAdapter()
+        mAdapter = RecyclerAdapter(this)
         mRecyclerView.adapter = mAdapter
+
 
 
 
@@ -61,12 +67,26 @@ class NotesActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings ->{
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    override fun onRecyclerItemClicked(position: Int) {
+        val intent = Intent(this, EditNoteActivity::class.java)
+        intent.putExtra("position", position)
+        startActivity(intent)
+    }
 
+    private fun startAppkillservice(){
+        val sharedPreferences = getSharedPreferences(resources.getString(R.string.shared_preferences_list), MODE_PRIVATE)
+        val savePreferences = SavePreferences(sharedPreferences)
+        savePreferences.readNoteList()
+        val appKillService = Intent(this, AppKillService::class.java)
+        startService(appKillService)
+    }
 
 
 }

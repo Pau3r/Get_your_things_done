@@ -11,4 +11,5 @@
     <string name="note_date">Date</string>
     <string name="no_title">Please add title</string>
     <string name="switch_date">no date</string>
+    <string name="shared_preferences_list" translatable="false">com.example.getyourthingsdone.list</string>
 </resources>
