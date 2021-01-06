@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Ustawienia</string>
+    <string name="next">Następny</string>
+    <string name="previous">Poprzedni</string>
+    <string name="title_activity_create_note">Utwórz notatkę</string>
+    <string name="note_title">Tytuł</string>
+    <string name="note_description">Opis</string>
+    <string name="note_date">Data</string>
+    <string name="no_title">Proszę dodaj tytuł</string>
+    <string name="switch_date">bez daty</string>
+</resources>
