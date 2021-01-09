@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
-data class Note(var title: String, var description: String?, var date: Calendar?) : Parcelable {
+data class Note(var title: String, var description: String?, var startDate: Calendar?, var endDate: Calendar?) : Parcelable {
 
 
 }

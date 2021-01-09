@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,27 +28,21 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
         setSupportActionBar(findViewById(R.id.toolbar))
         startAppkillservice()
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-           startActivity(
-               Intent(
-                   this,
-                   EditNoteActivity::class.java
-               )
-           )
+            startActivity(
+                    Intent(
+                            this,
+                            EditNoteActivity::class.java
+                    )
+            )
         }
 
-
-
-
-       mRecyclerView =  findViewById(R.id.recycler_notes)
+        mRecyclerView = findViewById(R.id.recycler_notes)
 
 
         linearLayoutManager = LinearLayoutManager(this)
         mRecyclerView.layoutManager = linearLayoutManager
         mAdapter = RecyclerAdapter(this)
         mRecyclerView.adapter = mAdapter
-
-
-
 
     }
 
@@ -67,7 +62,7 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings ->{
+            R.id.action_settings -> {
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -78,9 +73,10 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
         val intent = Intent(this, EditNoteActivity::class.java)
         intent.putExtra("position", position)
         startActivity(intent)
+
     }
 
-    private fun startAppkillservice(){
+    private fun startAppkillservice() {
         val sharedPreferences = getSharedPreferences(resources.getString(R.string.shared_preferences_list), MODE_PRIVATE)
         val savePreferences = SavePreferences(sharedPreferences)
         savePreferences.readNoteList()
