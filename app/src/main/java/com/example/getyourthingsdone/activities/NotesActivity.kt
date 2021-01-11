@@ -3,14 +3,18 @@ package com.example.getyourthingsdone.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.getyourthingsdone.R
 import com.example.getyourthingsdone.adapters.OnRecyclerItemClickListener
 import com.example.getyourthingsdone.adapters.RecyclerAdapter
+import com.example.getyourthingsdone.models.DatabaseManager
+import com.example.getyourthingsdone.models.NoteList
 import com.example.getyourthingsdone.models.SavePreferences
 import com.example.getyourthingsdone.services.AppKillService
 import com.firebase.ui.auth.AuthUI
@@ -42,11 +46,15 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
 
         mRecyclerView = findViewById(R.id.recycler_notes)
 
-
+        if (!NoteList.list.isNullOrEmpty())
+        {
+            NoteList.list.sortBy { it.startDate }
+        }
         linearLayoutManager = LinearLayoutManager(this)
         mRecyclerView.layoutManager = linearLayoutManager
         mAdapter = RecyclerAdapter(this)
         mRecyclerView.adapter = mAdapter
+
 
     }
 
@@ -89,6 +97,7 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
 
     override fun onResume() {
         super.onResume()
+        NoteList.list.sortBy { it.startDate }
         mAdapter.notifyDataSetChanged()
     }
 
@@ -103,8 +112,21 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> {
-                true
+            R.id.action_get_data_from_database -> {
+                val db = DatabaseManager()
+                db.getAllNotesFromDatabase()
+                mAdapter.notifyDataSetChanged()
+                return true
+            }
+            R.id.action_send_data_to_database -> {
+                val db = DatabaseManager()
+                db.addAllNotesToDatabase()
+                return true
+            }
+            R.id.action_delete_data_from_database -> {
+                val db = DatabaseManager()
+                db.deleteAllNotesFromDatabase()
+                return true
             }
             else -> super.onOptionsItemSelected(item)
         }

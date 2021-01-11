@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Get your things done</string>
+    <string name="app_name">Get your things done</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>
@@ -12,4 +12,10 @@
     <string name="no_title">Please add title</string>
     <string name="switch_date">no date</string>
     <string name="shared_preferences_list" translatable="false">com.example.getyourthingsdone.list</string>
+    <string name="get_data_from_database">Get list from database</string>
+    <string name="send_data_to_database">Send list to database</string>
+    <string name="success">Success</string>
+    <string name="fail">Failed!</string>
+    <string name="give_length_event">length of the event (minutes)</string>
+    <string name="delete_data_from_database">Delete list form database</string>
 </resources>

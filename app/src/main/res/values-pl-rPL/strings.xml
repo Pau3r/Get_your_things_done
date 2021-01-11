@@ -9,4 +9,11 @@
     <string name="note_date">Data</string>
     <string name="no_title">Proszę dodaj tytuł</string>
     <string name="switch_date">bez daty</string>
+    <string name="get_data_from_database">Pobierz listę z bazy danych</string>
+    <string name="send_data_to_database">Zapisz listę w bazie danych</string>
+    <string name="success">Sukces</string>
+    <string name="fail">Nie udało się</string>
+    <string name="give_length_event">Długość wydarzenia (minuty)</string>
+    <string name="app_name">"Załatw swoje sprawy "</string>
+    <string name="delete_data_from_database">Usuń listę z bazy danych</string>
 </resources>

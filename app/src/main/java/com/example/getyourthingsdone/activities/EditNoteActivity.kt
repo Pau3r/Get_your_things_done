@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.view.View
 import android.widget.*
 import com.example.getyourthingsdone.R
 import com.example.getyourthingsdone.models.Note
@@ -19,6 +20,7 @@ class EditNoteActivity : AppCompatActivity() {
 
     private lateinit var mTitle: EditText
     private lateinit var mDescription: EditText
+    private lateinit var mEventDurationTyped: EditText
     private lateinit var mDate: TextView
     private val mChosenDate = Calendar.getInstance()
 
@@ -50,10 +52,10 @@ class EditNoteActivity : AppCompatActivity() {
                 addNote()
 
                 startActivity(
-                        Intent(
-                                this,
-                                NotesActivity::class.java
-                        )
+                    Intent(
+                        this,
+                        NotesActivity::class.java
+                    )
                 )
             }
 
@@ -64,10 +66,10 @@ class EditNoteActivity : AppCompatActivity() {
             }
 
             startActivity(
-                    Intent(
-                            this,
-                            NotesActivity::class.java
-                    )
+                Intent(
+                    this,
+                    NotesActivity::class.java
+                )
             )
         }
 
@@ -78,10 +80,11 @@ class EditNoteActivity : AppCompatActivity() {
                 } else {
                     addNote()
                     mIsNewNote = false
-                    mPosition = NoteList.list.size -1
+                    mPosition = NoteList.list.size - 1
                     addEventToCalendar()
                 }
             } else {
+                NoteList.list[mPosition].endDate = setEndDate()
                 addEventToCalendar()
             }
         }
@@ -90,26 +93,40 @@ class EditNoteActivity : AppCompatActivity() {
         mDescription = findViewById(R.id.editTextDescription)
         mDate = findViewById(R.id.editTextDate)
         mSwitchDate = findViewById(R.id.switchDate)
+        mEventDurationTyped = findViewById(R.id.editTextEventLength)
 
         if (!mIsNewNote) {
 
             mTitle.text.append(NoteList.list[mPosition].title)
             if (NoteList.list[mPosition].description != null) mDescription.text.append(NoteList.list[mPosition].description)
             if (NoteList.list[mPosition].startDate != null) {
-                mDate.text = NoteList.list[mPosition].startDate?.get(Calendar.DAY_OF_MONTH).toString() +
-                        //java uses month form 0 and undecimber  <facepalm>
-                        "/" + NoteList.list[mPosition].startDate?.get(Calendar.MONTH)?.plus(1).toString() + //OMG
-                        "/" + NoteList.list[mPosition].startDate?.get(Calendar.YEAR).toString() +
-                        " " + NoteList.list[mPosition].startDate?.get(Calendar.HOUR_OF_DAY).toString() +
-                        ":" + NoteList.list[mPosition].startDate?.get(Calendar.MINUTE).toString()
+                mDate.text =
+                    NoteList.list[mPosition].startDate?.get(Calendar.DAY_OF_MONTH).toString() +
+                            //java uses month form 0 and undecimber  <facepalm>
+                            "/" + NoteList.list[mPosition].startDate?.get(Calendar.MONTH)?.plus(1)
+                        .toString() + //OMG
+                            "/" + NoteList.list[mPosition].startDate?.get(Calendar.YEAR)
+                        .toString() +
+                            " " + NoteList.list[mPosition].startDate?.get(Calendar.HOUR_OF_DAY)
+                        .toString() +
+                            ":" + NoteList.list[mPosition].startDate?.get(Calendar.MINUTE)
+                        .toString()
                 //set date from list
-                mChosenDate.set(NoteList.list[mPosition].startDate?.get(Calendar.YEAR)!!,
-                        NoteList.list[mPosition].startDate?.get(Calendar.MONTH)!!,
-                        NoteList.list[mPosition].startDate?.get(Calendar.DAY_OF_MONTH)!!,
-                        NoteList.list[mPosition].startDate?.get(Calendar.HOUR_OF_DAY)!!,
-                        NoteList.list[mPosition].startDate?.get(Calendar.MINUTE)!!)
+                mChosenDate.set(
+                    NoteList.list[mPosition].startDate?.get(Calendar.YEAR)!!,
+                    NoteList.list[mPosition].startDate?.get(Calendar.MONTH)!!,
+                    NoteList.list[mPosition].startDate?.get(Calendar.DAY_OF_MONTH)!!,
+                    NoteList.list[mPosition].startDate?.get(Calendar.HOUR_OF_DAY)!!,
+                    NoteList.list[mPosition].startDate?.get(Calendar.MINUTE)!!
+                )
 
                 mSwitchDate.isChecked = false
+                mEventDurationTyped.visibility = View.VISIBLE
+                val time =
+                    (NoteList.list[mPosition].endDate?.timeInMillis?.minus(NoteList.list[mPosition].startDate?.timeInMillis!!))?.div(
+                        60000
+                    )
+                mEventDurationTyped.text.append(time.toString())
 
                 addDateToNote()
 
@@ -120,8 +137,10 @@ class EditNoteActivity : AppCompatActivity() {
         mSwitchDate.setOnCheckedChangeListener { buttonView, isChecked ->
             if (!isChecked) {
                 addDateToNote()
+                mEventDurationTyped.visibility = View.VISIBLE
             } else {
                 mDate.setOnClickListener(null)
+                mEventDurationTyped.visibility = View.INVISIBLE
             }
         }
 
@@ -142,16 +161,16 @@ class EditNoteActivity : AppCompatActivity() {
 
             //date picker window
             DatePickerDialog(
-                    this,
-                    { view, year, month, dayOfMonth ->
-                        //need to add plus to to month because months start from 0
-                        mDate.text = "$dayOfMonth/${month.plus(1)}/$year"
-                        mChosenDate.set(year, month, dayOfMonth)
-                        timePickerDialog(hour, minute)
-                    },
-                    year,
-                    month,
-                    day
+                this,
+                { view, year, month, dayOfMonth ->
+                    //need to add plus to to month because months start from 0
+                    mDate.text = "$dayOfMonth/${month.plus(1)}/$year"
+                    mChosenDate.set(year, month, dayOfMonth)
+                    timePickerDialog(hour, minute)
+                },
+                year,
+                month,
+                day
             ).show()
         }
     }
@@ -159,15 +178,31 @@ class EditNoteActivity : AppCompatActivity() {
     private fun addNote() {
         if (mIsNewNote) {
             if (!mSwitchDate.isChecked) {
-                NoteList.list += Note(mTitle.text.toString(), mDescription.text.toString(), mChosenDate, setEndDate())
+                NoteList.list += Note(
+                    mTitle.text.toString(),
+                    mDescription.text.toString(),
+                    mChosenDate,
+                    setEndDate()
+                )
             } else {
-                NoteList.list += Note(mTitle.text.toString(), mDescription.text.toString(), null, null)
+                NoteList.list += Note(
+                    mTitle.text.toString(),
+                    mDescription.text.toString(),
+                    null,
+                    null
+                )
             }
         } else {
             if (!mSwitchDate.isChecked) {
-                NoteList.list[mPosition] = Note(mTitle.text.toString(), mDescription.text.toString(), mChosenDate, setEndDate())
+                NoteList.list[mPosition] = Note(
+                    mTitle.text.toString(),
+                    mDescription.text.toString(),
+                    mChosenDate,
+                    setEndDate()
+                )
             } else {
-                NoteList.list[mPosition] = Note(mTitle.text.toString(), mDescription.text.toString(), null, null)
+                NoteList.list[mPosition] =
+                    Note(mTitle.text.toString(), mDescription.text.toString(), null, null)
             }
 
         }
@@ -198,14 +233,22 @@ class EditNoteActivity : AppCompatActivity() {
     }
 
     private fun saveListToSharedPreferences() {
-        val sharedPreferences = getSharedPreferences(resources.getString(R.string.shared_preferences_list), MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences(
+            resources.getString(R.string.shared_preferences_list),
+            MODE_PRIVATE
+        )
         val savePreferences = SavePreferences(sharedPreferences)
         savePreferences.saveNoteList()
     }
 
 
     private fun setEndDate(): Calendar {
+        if (mEventDurationTyped.text.isNotEmpty()) {
+            mEventDuration = (mEventDurationTyped.text.toString().toLong() * 60000)
+        }
+
         val endDateInMilis = mChosenDate.timeInMillis + mEventDuration
+
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = endDateInMilis
         return calendar
@@ -216,11 +259,11 @@ class EditNoteActivity : AppCompatActivity() {
         val note = NoteList.list[mPosition]
 
         val calendarIntent = Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.Events.TITLE, note.title)
-                .putExtra(CalendarContract.Events.DESCRIPTION, note.description)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, note.startDate)
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, note.endDate)
+            .setData(CalendarContract.Events.CONTENT_URI)
+            .putExtra(CalendarContract.Events.TITLE, note.title)
+            .putExtra(CalendarContract.Events.DESCRIPTION, note.description)
+            .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, note.startDate?.timeInMillis)
+            .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, note.endDate?.timeInMillis)
         startActivity(calendarIntent)
 
     }
