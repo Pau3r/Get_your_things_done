@@ -16,4 +16,5 @@
     <string name="give_length_event">Długość wydarzenia (minuty)</string>
     <string name="app_name">"Załatw swoje sprawy "</string>
     <string name="delete_data_from_database">Usuń listę z bazy danych</string>
+    <string name="logout">Wyloguj</string>
 </resources>

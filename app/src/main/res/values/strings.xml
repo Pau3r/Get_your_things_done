@@ -18,4 +18,5 @@
     <string name="fail">Failed!</string>
     <string name="give_length_event">length of the event (minutes)</string>
     <string name="delete_data_from_database">Delete list form database</string>
+    <string name="logout">Logout</string>
 </resources>

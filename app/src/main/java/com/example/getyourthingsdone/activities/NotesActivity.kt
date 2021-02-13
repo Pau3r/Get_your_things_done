@@ -60,19 +60,7 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        if (FirebaseAuth.getInstance().currentUser == null){
-            val providers = arrayListOf(
-                AuthUI.IdpConfig.EmailBuilder().build(),
-                AuthUI.IdpConfig.GoogleBuilder().build(),)
-
-// Create and launch sign-in intent
-            startActivityForResult(
-                AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .build(),
-                1)
-        }
+        signIn()
 
     }
 
@@ -128,6 +116,11 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
                 db.deleteAllNotesFromDatabase()
                 return true
             }
+            R.id.action_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                signIn()
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -148,6 +141,24 @@ class NotesActivity : AppCompatActivity(), OnRecyclerItemClickListener {
         savePreferences.readNoteList()
         val appKillService = Intent(this, AppKillService::class.java)
         startService(appKillService)
+    }
+
+    private fun signIn(){
+        if (FirebaseAuth.getInstance().currentUser == null){
+            val providers = arrayListOf(
+                AuthUI.IdpConfig.EmailBuilder().build(),
+                AuthUI.IdpConfig.GoogleBuilder().build(),)
+
+// Create and launch sign-in intent
+            startActivityForResult(
+                AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setIsSmartLockEnabled(false)
+                    .setAvailableProviders(providers)
+                    .build(),
+                1)
+        }
+
     }
 
 

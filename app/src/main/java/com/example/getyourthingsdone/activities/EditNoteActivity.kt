@@ -269,4 +269,5 @@ class EditNoteActivity : AppCompatActivity() {
     }
 
 
+
 }
